@@ -21,7 +21,9 @@ import Foundation
 struct MiniCoachDataBinder {
     let locale: Locale
 
-    init(locale: Locale = Locale(identifier: "de_DE")) {
+    /// The default is the interface language, so a binder built without an
+    /// explicit locale speaks the same language as the prompt around it.
+    init(locale: Locale = AppLanguage.current.locale) {
         self.locale = locale
     }
 
@@ -42,11 +44,13 @@ struct MiniCoachDataBinder {
         moods: [MoodEntry],
         now: Date = Date()
     ) -> String {
-        let language = locale.language.languageCode?.identifier ?? "de"
+        let language = AppLanguage.resolve(locale)
         if measurements.isEmpty, moods.isEmpty {
-            return language == "en"
-                ? "(no measurements or mood entries available in the window)"
-                : "(keine Messungen oder Stimmungseinträge im Zeitfenster verfügbar)"
+            return language.pick(
+                de: "(keine Messungen oder Stimmungseinträge im Zeitfenster verfügbar)",
+                en: "(no measurements or mood entries available in the window)",
+                nl: "(geen metingen of stemmingsregistraties beschikbaar in het tijdvenster)"
+            )
         }
 
         switch category {
@@ -68,7 +72,7 @@ struct MiniCoachDataBinder {
     private func renderLatestPerKind(
         measurements: [Measurement],
         moods: [MoodEntry],
-        language: String
+        language: AppLanguage
     ) -> String {
         var lines: [String] = []
         let grouped = Dictionary(grouping: measurements, by: \.kind)
@@ -82,13 +86,15 @@ struct MiniCoachDataBinder {
         // latest NAMEABLE entry; the coach is handed no mood line at all when
         // this build can name none.
         if let latestMood = MoodEntry.scored(moods).max(by: { $0.entry.recordedAt < $1.entry.recordedAt }) {
-            let header = language == "en" ? "mood" : "Stimmung"
+            let header = moodLabel(language)
             lines.append("\(header): \(latestMood.score)/5")
         }
         let count = measurements.count
-        let header = language == "en"
-            ? "Latest reading per metric (\(count) total measurements):"
-            : "Letzter Wert je Metrik (\(count) Messungen insgesamt):"
+        let header = language.pick(
+            de: "Letzter Wert je Metrik (\(count) Messungen insgesamt):",
+            en: "Latest reading per metric (\(count) total measurements):",
+            nl: "Laatste waarde per meting (\(count) metingen in totaal):"
+        )
         return header + "\n" + lines.joined(separator: "\n")
     }
 
@@ -97,14 +103,16 @@ struct MiniCoachDataBinder {
         measurements: [Measurement],
         moods: [MoodEntry],
         now: Date,
-        language: String
+        language: AppLanguage
     ) -> String {
         let cutoff = now.addingTimeInterval(-7 * 24 * 3600)
         let window = measurements.filter { $0.recordedAt >= cutoff }
         let moodWindow = moods.filter { $0.recordedAt >= cutoff }
-        let header = language == "en"
-            ? "Window: last 7 days (\(window.count) measurements, \(moodWindow.count) mood entries)"
-            : "Zeitraum: letzte 7 Tage (\(window.count) Messungen, \(moodWindow.count) Stimmungseinträge)"
+        let header = language.pick(
+            de: "Zeitraum: letzte 7 Tage (\(window.count) Messungen, \(moodWindow.count) Stimmungseinträge)",
+            en: "Window: last 7 days (\(window.count) measurements, \(moodWindow.count) mood entries)",
+            nl: "Periode: laatste 7 dagen (\(window.count) metingen, \(moodWindow.count) stemmingsregistraties)"
+        )
         var lines: [String] = [header]
         let grouped = Dictionary(grouping: window, by: \.kind)
         // Audit B-4 — `selectableCases`, not `allCases`: the coach must not be
@@ -118,7 +126,7 @@ struct MiniCoachDataBinder {
             let scores = MoodEntry.scored(moodWindow).map(\.score)
             if let minScore = scores.min(), let maxScore = scores.max() {
                 let avg = Double(scores.reduce(0, +)) / Double(scores.count)
-                let label = language == "en" ? "mood" : "Stimmung"
+                let label = moodLabel(language)
                 lines.append(String(format: "%@: min %d, max %d, avg %.1f", label, minScore, maxScore, avg))
             }
         }
@@ -132,22 +140,33 @@ struct MiniCoachDataBinder {
         measurements: [Measurement],
         moods: [MoodEntry],
         now _: Date,
-        language: String
+        language: AppLanguage
     ) -> String {
         let sorted = measurements.sorted(by: { $0.recordedAt < $1.recordedAt })
         guard let first = sorted.first, let last = sorted.last else {
-            return language == "en"
-                ? "(no measurements in window)"
-                : "(keine Messungen im Zeitfenster)"
+            return language.pick(
+                de: "(keine Messungen im Zeitfenster)",
+                en: "(no measurements in window)",
+                nl: "(geen metingen in het tijdvenster)"
+            )
         }
-        let header = language == "en"
-            ? "History window: \(sorted.count) measurements between earliest and latest entry"
-            : "Verlaufsfenster: \(sorted.count) Messungen zwischen erstem und letztem Eintrag"
+        let header = language.pick(
+            de: "Verlaufsfenster: \(sorted.count) Messungen zwischen erstem und letztem Eintrag",
+            en: "History window: \(sorted.count) measurements between earliest and latest entry",
+            nl: "Verloopvenster: \(sorted.count) metingen tussen eerste en laatste registratie"
+        )
         var lines = [header]
-        lines.append((language == "en" ? "earliest: " : "frühester Eintrag: ") + format(measurement: first, language: language))
-        lines.append((language == "en" ? "latest: " : "letzter Eintrag: ") + format(measurement: last, language: language))
+        let earliest = language.pick(de: "frühester Eintrag: ", en: "earliest: ", nl: "eerste registratie: ")
+        let latest = language.pick(de: "letzter Eintrag: ", en: "latest: ", nl: "laatste registratie: ")
+        lines.append(earliest + format(measurement: first, language: language))
+        lines.append(latest + format(measurement: last, language: language))
         if !moods.isEmpty {
-            lines.append((language == "en" ? "mood entries in window: " : "Stimmungseinträge im Fenster: ") + String(moods.count))
+            let moodCount = language.pick(
+                de: "Stimmungseinträge im Fenster: ",
+                en: "mood entries in window: ",
+                nl: "stemmingsregistraties in het tijdvenster: "
+            )
+            lines.append(moodCount + String(moods.count))
         }
         return lines.joined(separator: "\n")
     }
@@ -157,15 +176,21 @@ struct MiniCoachDataBinder {
         measurements: [Measurement],
         moods: [MoodEntry],
         now: Date,
-        language: String
+        language: AppLanguage
     ) -> String {
         let weekAgo = now.addingTimeInterval(-7 * 24 * 3600)
         let twoWeeksAgo = now.addingTimeInterval(-14 * 24 * 3600)
         let recent = measurements.filter { $0.recordedAt >= weekAgo }
         let prior = measurements.filter { $0.recordedAt >= twoWeeksAgo && $0.recordedAt < weekAgo }
-        let header = language == "en"
-            ? "Comparison: last 7 days (recent, \(recent.count) measurements) vs. previous 7 days (prior, \(prior.count) measurements)"
-            : "Vergleich: letzte 7 Tage (jetzt, \(recent.count) Messungen) vs. vorletzte 7 Tage (davor, \(prior.count) Messungen)"
+        let header = language.pick(
+            de: "Vergleich: letzte 7 Tage (jetzt, \(recent.count) Messungen) vs. vorletzte 7 Tage (davor, \(prior.count) Messungen)",
+            en: "Comparison: last 7 days (recent, \(recent.count) measurements) vs. previous 7 days (prior, \(prior.count) measurements)",
+            nl: "Vergelijking: laatste 7 dagen (nu, \(recent.count) metingen) vs. de 7 dagen daarvoor (daarvoor, \(prior.count) metingen)"
+        )
+        // The row words echo the header's labels; the English rows used to
+        // carry the German "jetzt" / "davor" under an English header.
+        let nowWord = language.pick(de: "jetzt", en: "recent", nl: "nu")
+        let priorWord = language.pick(de: "davor", en: "prior", nl: "daarvoor")
         var lines: [String] = [header]
         let recentGrouped = Dictionary(grouping: recent, by: \.kind)
         let priorGrouped = Dictionary(grouping: prior, by: \.kind)
@@ -175,22 +200,27 @@ struct MiniCoachDataBinder {
             let recentGroup = recentGrouped[kind] ?? []
             let priorGroup = priorGrouped[kind] ?? []
             guard !(recentGroup.isEmpty && priorGroup.isEmpty) else { continue }
-            let label = displayName(for: kind, language: language)
-            lines.append("\(label): jetzt \(recentGroup.count), davor \(priorGroup.count)")
+            let label = displayName(for: kind, language: language.rawValue)
+            lines.append("\(label): \(nowWord) \(recentGroup.count), \(priorWord) \(priorGroup.count)")
         }
         if !moods.isEmpty {
             let recentMood = moods.filter { $0.recordedAt >= weekAgo }.count
             let priorMood = moods.filter { $0.recordedAt >= twoWeeksAgo && $0.recordedAt < weekAgo }.count
-            let label = language == "en" ? "mood entries" : "Stimmungseinträge"
-            lines.append("\(label): jetzt \(recentMood), davor \(priorMood)")
+            let label = language.pick(de: "Stimmungseinträge", en: "mood entries", nl: "stemmingsregistraties")
+            lines.append("\(label): \(nowWord) \(recentMood), \(priorWord) \(priorMood)")
         }
         return lines.joined(separator: "\n")
     }
 
     // MARK: - Formatting helpers
 
-    private func format(measurement: Measurement, language: String) -> String {
-        let label = displayName(for: measurement.kind, language: language)
+    /// The word for a mood line in the digest.
+    private func moodLabel(_ language: AppLanguage) -> String {
+        language.pick(de: "Stimmung", en: "mood", nl: "stemming")
+    }
+
+    private func format(measurement: Measurement, language: AppLanguage) -> String {
+        let label = displayName(for: measurement.kind, language: language.rawValue)
         let unit = measurement.kind.unit
         let valueString = switch measurement.value {
         case let .scalar(v): "\(formatNumber(v)) \(unit)"
@@ -200,8 +230,8 @@ struct MiniCoachDataBinder {
         return "\(label): \(valueString) (\(dateString))"
     }
 
-    private func summarise(kind: MetricKind, group: [Measurement], language: String) -> String {
-        let label = displayName(for: kind, language: language)
+    private func summarise(kind: MetricKind, group: [Measurement], language: AppLanguage) -> String {
+        let label = displayName(for: kind, language: language.rawValue)
         let scalars: [Double] = group.compactMap { m in
             if case let .scalar(v) = m.value { v } else { nil }
         }

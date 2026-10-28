@@ -55,7 +55,7 @@ public struct OnDeviceBriefingHero: View {
         moodEntries: [MoodEntry] = [],
         compliance: ComplianceSnapshotInput? = nil,
         style: DailyBriefingHero.Style = .full,
-        locale: Locale = .current,
+        locale: Locale = AppLanguage.current.locale,
         service: OnDeviceBriefingService = OnDeviceBriefingService(),
         preferServer: Bool = false,
         onTap: (() -> Void)? = nil
@@ -284,7 +284,9 @@ public struct OnDeviceBriefingHero: View {
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.timeZone = .current
         let day = formatter.string(from: Date())
-        let lang = locale.language.languageCode?.identifier ?? "de"
+        // Keyed on the resolved prompt language, so a Dutch briefing never
+        // serves a German reader (and every unshipped language shares "en").
+        let lang = AppLanguage.resolve(locale).rawValue
         return "ondevice_briefing.\(day).\(lang)"
     }
 

@@ -45,7 +45,7 @@ struct InsightsBriefingHero: View {
                 moodEntries: moodStore.entries,
                 compliance: (dashboardStore.summary?.compliance).map(ComplianceSnapshotInput.init(from:)),
                 style: .full,
-                locale: .current,
+                locale: AppLanguage.current.locale,
                 service: appContainer?.onDeviceBriefingService ?? OnDeviceBriefingService(),
                 // I-3 ITEM 3 — server AI active (`aiMode == .online`) → prefer the
                 // richer server briefing over the on-device / Statistik arm; the

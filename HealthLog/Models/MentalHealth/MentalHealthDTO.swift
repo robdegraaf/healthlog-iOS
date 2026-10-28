@@ -139,9 +139,16 @@ public struct CreateAssessmentRequest: Codable, Sendable, Equatable {
     public let items: [Int]
     /// Optional functional-impairment follow-up (0–3) — NOT scored into the total.
     public let functionalDifficulty: Int?
-    /// The validated wording's locale actually presented ("de" / "en"), so the
-    /// server resolves the matching crisis-resource set + records the locale.
+    /// The interface language the questionnaire was presented in ("de" / "en" /
+    /// "nl"), so the server resolves the matching crisis-resource set + records
+    /// the locale.
     public let locale: String?
+    /// `true` when the items were shown in the English original rather than in
+    /// `locale`'s own wording (the SCI outside English). The server records
+    /// the administration's wording from this and `locale` (`original_en`
+    /// instead of a translation the reader never saw); `nil` leaves the field
+    /// out, and a server that predates it ignores it.
+    public let englishOriginal: Bool?
     /// #39 / server v1.25 — client provenance (`assessmentSourceEnum ∈
     /// {"WEB","IOS"}`; server defaults to `"WEB"`). iOS always sends `"IOS"` so
     /// its administrations are attributed correctly instead of mis-tagged WEB.
@@ -158,6 +165,7 @@ public struct CreateAssessmentRequest: Codable, Sendable, Equatable {
         items: [Int],
         functionalDifficulty: Int? = nil,
         locale: String? = nil,
+        englishOriginal: Bool? = nil,
         source: String? = nil,
         externalId: String? = nil
     ) {
@@ -165,6 +173,7 @@ public struct CreateAssessmentRequest: Codable, Sendable, Equatable {
         self.items = items
         self.functionalDifficulty = functionalDifficulty
         self.locale = locale
+        self.englishOriginal = englishOriginal
         self.source = source
         self.externalId = externalId
     }
@@ -175,12 +184,13 @@ public struct CreateAssessmentRequest: Codable, Sendable, Equatable {
         try c.encode(items, forKey: .items)
         try c.encodeIfPresent(functionalDifficulty, forKey: .functionalDifficulty)
         try c.encodeIfPresent(locale, forKey: .locale)
+        try c.encodeIfPresent(englishOriginal, forKey: .englishOriginal)
         try c.encodeIfPresent(source, forKey: .source)
         try c.encodeIfPresent(externalId, forKey: .externalId)
     }
 
     private enum CodingKeys: String, CodingKey {
-        case instrument, items, functionalDifficulty, locale, source, externalId
+        case instrument, items, functionalDifficulty, locale, englishOriginal, source, externalId
     }
 }
 

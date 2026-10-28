@@ -206,13 +206,16 @@ public enum MentalHealthInstrument: String, Codable, Sendable, CaseIterable, Ide
     }
 
     /// Item wording is validated in all bundled server locales except SCI,
-    /// whose redistributed validated wording is English only.
+    /// whose redistributed validated wording is English only. Dutch carries the
+    /// server's published validated text (Pfizer "Dutch for the Netherlands"
+    /// for PHQ-9 / GAD-7, the WHO-5 Dutch version), reproduced in the
+    /// catalogue's `nl` values.
     public var validatedItemLocales: Set<String> {
         switch self {
         case .sci:
             ["en"]
         case .phq9, .gad7, .who5:
-            ["de", "en", "es", "fr", "it", "pl"]
+            ["de", "en", "es", "fr", "it", "nl", "pl"]
         }
     }
 

@@ -198,13 +198,13 @@ struct MentalHealthSciLocalisationTests {
         "mentalHealth.stems.sci.finally"
     ]
 
-    @Test("All eight SCI items and their three stems exist in both bundled languages")
+    @Test("All eight SCI items and their three stems exist in every bundled language")
     func allEightItemsArePresent() throws {
         let catalog = try ParityCatalog.load()
         #expect(Self.itemKeys.count == MentalHealthInstrument.sci.itemCount)
         for key in Self.itemKeys + Self.stemKeys {
             let entry = try #require(catalog.strings[key], "missing catalog entry \(key)")
-            for language in ["de", "en"] {
+            for language in ["de", "en", "nl"] {
                 let value = ParityCatalog.value(entry, language: language)
                 #expect(value?.isEmpty == false, "\(key) has no \(language) value")
             }
@@ -218,9 +218,12 @@ struct MentalHealthSciLocalisationTests {
             let entry = try #require(catalog.strings[key])
             let de = try #require(ParityCatalog.value(entry, language: "de"))
             let en = try #require(ParityCatalog.value(entry, language: "en"))
-            // Identical by design: a German rendering of a validated instrument
-            // would change the measurement, so the original wording is shown.
+            let nl = try #require(ParityCatalog.value(entry, language: "nl"))
+            // Identical by design: a German or Dutch rendering of a validated
+            // instrument would change the measurement, so the original wording
+            // is shown.
             #expect(de == en, "\(key) was translated — the SCI wording must stay the English original")
+            #expect(nl == en, "\(key) was translated — the SCI wording must stay the English original")
         }
     }
 
@@ -238,6 +241,9 @@ struct MentalHealthSciLocalisationTests {
         #expect(de.localizedCaseInsensitiveContains("validiert"))
         #expect(en.localizedCaseInsensitiveContains("english"))
         #expect(en.localizedCaseInsensitiveContains("validated"))
+        let nl = try #require(ParityCatalog.value(entry, language: "nl"))
+        #expect(nl.localizedCaseInsensitiveContains("engels"))
+        #expect(nl.localizedCaseInsensitiveContains("gevalideerd"))
     }
 
     @Test("The note shows exactly where the wording is unvalidated, and nowhere else")
@@ -248,9 +254,13 @@ struct MentalHealthSciLocalisationTests {
         #expect(sci.hasValidatedItems(locale: "en-GB"))
         #expect(!sci.hasValidatedItems(locale: "de"))
         #expect(!sci.hasValidatedItems(locale: "de_DE"))
-        // The instruments with validated German wording never show the note.
+        #expect(!sci.hasValidatedItems(locale: "nl"))
+        #expect(!sci.hasValidatedItems(locale: "nl_NL"))
+        // The instruments with validated German and Dutch wording never show
+        // the note.
         for instrument in [MentalHealthInstrument.phq9, .gad7, .who5] {
             #expect(instrument.hasValidatedItems(locale: "de-DE"))
+            #expect(instrument.hasValidatedItems(locale: "nl-NL"))
         }
     }
 

@@ -111,7 +111,7 @@ public final class MentalHealthStore {
         self.presentedLocale = presentedLocale
     }
 
-    /// The app's effective UI language ("de" / "en") — the bundle's first
+    /// The app's effective UI language ("de" / "en" / "nl") — the bundle's first
     /// preferred localization. Matches what the questionnaire wording is shown in.
     public static func deviceDisplayLocale() -> String {
         Bundle.main.preferredLocalizations.first ?? "en"
@@ -258,6 +258,11 @@ public final class MentalHealthStore {
             items: items,
             functionalDifficulty: functionalDifficulty,
             locale: presentedLocale,
+            // The form shows the English original wherever the instrument has
+            // no validated wording in `presentedLocale` (the SCI outside
+            // English); say so, or the server records a translation the
+            // reader never saw.
+            englishOriginal: instrument.hasValidatedItems(locale: presentedLocale) ? nil : true,
             source: Self.clientSource,
             externalId: externalId
         )

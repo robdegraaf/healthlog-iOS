@@ -159,4 +159,30 @@ struct MedicationDraftHeuristicTests {
         let draft = MedicationDraftHeuristic.extract(from: ocr)
         #expect(draft?.name == "Metformin Hexal")
     }
+
+    // MARK: - Dutch packs
+
+    @Test("guessDoseForm — a Dutch interface reads \"Tabletten\" as Tablet, a German one as Tablette")
+    func dutchDoseFormFollowsInterfaceLanguage() {
+        let lines = ["Metformine Sandoz", "500 mg", "Tabletten"]
+        #expect(MedicationDraftHeuristic.guessDoseForm(lines: lines, language: .nl) == "Tablet")
+        // "tabletten" contains "tablette", which is why the order matters.
+        #expect(MedicationDraftHeuristic.guessDoseForm(lines: lines, language: .de) == "Tablette")
+        #expect(MedicationDraftHeuristic.guessDoseForm(lines: ["Zetpillen 100 mg"], language: .nl) == "Zetpil")
+        #expect(MedicationDraftHeuristic.guessDoseForm(lines: ["Filmomhulde tabletten"], language: .nl) == "Filmomhulde tablet")
+    }
+
+    @Test("extract — a B.V. line is the manufacturer and a Werkzame stof line never the name")
+    func dutchManufacturerAndMetadata() {
+        let ocr = """
+        Werkzame stof: metformine
+        Metformine Sandoz
+        500 mg
+        Sandoz B.V.
+        RVG 12345
+        """
+        let draft = MedicationDraftHeuristic.extract(from: ocr)
+        #expect(draft?.name == "Metformine Sandoz")
+        #expect(draft?.manufacturerHint == "Sandoz B.V.")
+    }
 }

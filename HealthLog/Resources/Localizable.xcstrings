@@ -1921,6 +1921,30 @@
         }
       }
     },
+    "%lldh %lldm": {
+      "comment": "Sleep duration — hours and minutes (Int+SafeServer.safeServerSleepDurationHM)",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld Std. %2$lld Min."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld h %2$lld min"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld u %2$lld min"
+          }
+        }
+      }
+    },
     "+%@": {
       "extractionState": "manual",
       "localizations": {
@@ -10437,6 +10461,30 @@
         }
       }
     },
+    "Couldn't create the token. Please try again.": {
+      "comment": "MCP settings — create failure for a token",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Token konnte nicht erstellt werden. Bitte versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't create the token. Please try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Het token kon niet worden aangemaakt. Probeer het opnieuw."
+          }
+        }
+      }
+    },
     "Couldn't delete conversation": {
       "extractionState": "manual",
       "localizations": {
@@ -10547,6 +10595,78 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kan dat niet vergeten. Probeer het opnieuw."
+          }
+        }
+      }
+    },
+    "Couldn't load API tokens. Please try again.": {
+      "comment": "API token settings — load failure for the token list",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die API-Tokens konnten nicht geladen werden. Bitte versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load API tokens. Please try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De API-tokens konden niet worden geladen. Probeer het opnieuw."
+          }
+        }
+      }
+    },
+    "Couldn't load MCP connections. Please try again.": {
+      "comment": "MCP settings — load failure for the connections list",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die MCP-Verbindungen konnten nicht geladen werden. Bitte versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load MCP connections. Please try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De MCP-koppelingen konden niet worden geladen. Probeer het opnieuw."
+          }
+        }
+      }
+    },
+    "Couldn't load MCP tokens. Please try again.": {
+      "comment": "MCP settings — load failure for the token list",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die MCP-Tokens konnten nicht geladen werden. Bitte versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load MCP tokens. Please try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De MCP-tokens konden niet worden geladen. Probeer het opnieuw."
           }
         }
       }
@@ -10873,6 +10993,30 @@
         }
       }
     },
+    "Couldn't revoke the connection. Please try again.": {
+      "comment": "MCP settings — revoke failure for a connection",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Verbindung konnte nicht widerrufen werden. Bitte versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't revoke the connection. Please try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De koppeling kon niet worden ingetrokken. Probeer het opnieuw."
+          }
+        }
+      }
+    },
     "Couldn't revoke the share link. Please try again.": {
       "extractionState": "manual",
       "localizations": {
@@ -10892,6 +11036,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kan de deellink niet intrekken. Probeer het opnieuw."
+          }
+        }
+      }
+    },
+    "Couldn't revoke the token. Please try again.": {
+      "comment": "MCP / API token settings — revoke failure for a token",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Token konnte nicht widerrufen werden. Bitte versuche es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't revoke the token. Please try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Het token kon niet worden ingetrokken. Probeer het opnieuw."
           }
         }
       }

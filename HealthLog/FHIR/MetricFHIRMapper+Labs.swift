@@ -68,6 +68,7 @@ public extension MetricFHIRMapper {
         "hemoglobin": LOINCCode(code: "718-7", display: "Hemoglobin [Mass/volume] in Blood", physicianReviewPending: true),
         "hämoglobin": LOINCCode(code: "718-7", display: "Hemoglobin [Mass/volume] in Blood", physicianReviewPending: true),
         "haemoglobin": LOINCCode(code: "718-7", display: "Hemoglobin [Mass/volume] in Blood", physicianReviewPending: true),
+        "hemoglobine": LOINCCode(code: "718-7", display: "Hemoglobin [Mass/volume] in Blood", physicianReviewPending: true),
         // #115 R3 — method-less LDL (server v1.39.3 `lab-loinc.ts`): a logged
         // value does not say whether it was measured directly (18262-6) or
         // calculated (13457-7), so neither method code may be asserted.
@@ -93,16 +94,27 @@ public extension MetricFHIRMapper {
             display: "Cholesterol [Mass/volume] in Serum or Plasma",
             physicianReviewPending: true
         ),
+        "totaal cholesterol": LOINCCode(
+            code: "2093-3",
+            display: "Cholesterol [Mass/volume] in Serum or Plasma",
+            physicianReviewPending: true
+        ),
         "triglycerides": LOINCCode(code: "2571-8", display: "Triglyceride [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
+        "triglyceriden": LOINCCode(code: "2571-8", display: "Triglyceride [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
         "tsh": LOINCCode(code: "3016-3", display: "Thyrotropin [Units/volume] in Serum or Plasma", physicianReviewPending: true),
         "creatinine": LOINCCode(code: "2160-0", display: "Creatinine [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
         "kreatinin": LOINCCode(code: "2160-0", display: "Creatinine [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
         "ferritin": LOINCCode(code: "2276-4", display: "Ferritin [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
+        "ferritine": LOINCCode(code: "2276-4", display: "Ferritin [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
         "crp": LOINCCode(code: "1988-5", display: "C reactive protein [Mass/volume] in Serum or Plasma", physicianReviewPending: true),
         // #115 R3 — total 25-OH vitamin D (D2 + D3) is what labs report; 1989-3
         // is D3 alone (server v1.39.3 `lab-loinc.ts`).
         "vitamin d": LOINCCode(code: "62292-8", display: vitaminDTotalDisplay, physicianReviewPending: true),
-        "25-oh vitamin d": LOINCCode(code: "62292-8", display: vitaminDTotalDisplay, physicianReviewPending: true)
+        "25-oh vitamin d": LOINCCode(code: "62292-8", display: vitaminDTotalDisplay, physicianReviewPending: true),
+        // Dutch analyte names a Dutch lab prints (the German spellings above
+        // are the same kind of input alias).
+        "vitamine d": LOINCCode(code: "62292-8", display: vitaminDTotalDisplay, physicianReviewPending: true),
+        "25-oh vitamine d": LOINCCode(code: "62292-8", display: vitaminDTotalDisplay, physicianReviewPending: true)
     ]
 
     /// LOINC 62292-8 long name, shared by the two vitamin-D aliases above.

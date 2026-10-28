@@ -1,6 +1,30 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%lldh %lldm": {
+      "comment": "Sleep duration — hours and minutes (Int+SafeServer.safeServerSleepDurationHM)",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld Std. %2$lld Min."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld h %2$lld min"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld u %2$lld min"
+          }
+        }
+      }
+    },
     "control.capture.description": {
       "comment": "Erfassen control — gallery description shown when adding the control",
       "localizations": {

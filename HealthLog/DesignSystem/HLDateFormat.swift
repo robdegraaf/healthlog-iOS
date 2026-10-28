@@ -70,7 +70,7 @@ public enum HLDateFormat: String, CaseIterable, Sendable {
     public var formattingLocale: Locale {
         switch self {
         case .auto: .current
-        case .dayMonthYear: AppLanguage.current == .nl ? Locale(identifier: "nl_NL") : Locale(identifier: "de_DE")
+        case .dayMonthYear: Locale(identifier: AppLanguage.current == .nl ? "nl_NL" : "de_DE")
         case .monthDayYear: Locale(identifier: "en_US")
         case .yearMonthDay: Locale(identifier: "en_CA")
         }

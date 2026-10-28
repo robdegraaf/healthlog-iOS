@@ -45,7 +45,7 @@ struct PluralVariationGuardTests {
         "workout.hrZones.a11y.summary %lld"
     ]
 
-    @Test("Required count keys carry a well-formed one/other plural in DE and EN")
+    @Test("Required count keys carry a well-formed one/other plural in DE, EN and NL")
     func requiredKeysArePluralized() throws {
         let catalog = try Self.loadCatalog()
         var problems: [String] = []
@@ -54,7 +54,7 @@ struct PluralVariationGuardTests {
                 problems.append("\(key): missing from catalog")
                 continue
             }
-            for lang in ["de", "en"] {
+            for lang in ["de", "en", "nl"] {
                 guard let plural = Self.plural(entry: entry, language: lang) else {
                     problems.append("\(key)/\(lang): no plural variation")
                     continue

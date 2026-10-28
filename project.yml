@@ -446,7 +446,7 @@ targets:
         # registered Spezi modules) plus the empty Settings → Geräte screen
         # with a disabled "Gerät hinzufügen" CTA — no scan is started yet,
         # so the prompt stays dormant until F.2 wires the first device
-        # profile. Localized permission copy lives in de/en InfoPlist.strings.
+        # profile. Localized permission copy lives in de/en/nl InfoPlist.strings.
         # 1.0.3 / audit row 26 — narrowed from "Blutdruckmessgeräte,
         # Glukose-Sensoren und Waagen" to what is actually registered: the single
         # `Discover(OmronBloodPressureCuff, by: .advertisedService(BloodPressureService))`
@@ -457,6 +457,7 @@ targets:
         CFBundleLocalizations:
           - de
           - en
+          - nl
         # No server identity is compiled into the distributed app. HTTPS uses
         # system trust and the user enters a server during onboarding.
     settings:
@@ -738,6 +739,7 @@ targets:
         CFBundleLocalizations:
           - de
           - en
+          - nl
         # The extension follows the same operator-neutral system-trust posture
         # as the host app and carries no compiled server identity.
         # WidgetKit extension point — without this the extension never
@@ -805,6 +807,7 @@ targets:
         CFBundleLocalizations:
           - de
           - en
+          - nl
         NSExtension:
           NSExtensionPointIdentifier: com.apple.usernotifications.service
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
@@ -872,6 +875,7 @@ targets:
         CFBundleLocalizations:
           - de
           - en
+          - nl
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.healthlog.app.watchkitapp
@@ -932,6 +936,7 @@ targets:
         CFBundleLocalizations:
           - de
           - en
+          - nl
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:

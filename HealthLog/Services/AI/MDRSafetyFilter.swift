@@ -12,8 +12,9 @@ import Foundation
 /// `@Generable OnDeviceBriefing` (iOS 26+) and the legacy server-AI surfaces
 /// when reused (R4 §5.2). Logging stays PII-free — never log raw output text.
 public actor MDRSafetyFilter {
-    /// Regex pattern + the matrix row in R4 §5 it covers.
-    private struct Pattern {
+    /// Regex pattern + the matrix row in R4 §5 it covers. Internal, not
+    /// private, only so `MDRSafetyFilter+Dutch.swift` can build its rows.
+    struct Pattern {
         let regex: NSRegularExpression
         let matrixRow: Int
         let label: String
@@ -39,7 +40,7 @@ public actor MDRSafetyFilter {
     /// verb — `overlapping`. A possibility handed to a clinician is forbidden
     /// only because of what stands next to it, so that exemption reads the
     /// sentence — `sentenceCarries`.
-    private struct Exemption {
+    struct Exemption {
         enum Scope {
             /// The flagged token is itself part of the exempting phrase — the
             /// cited body IS the subject of the recommendation. Scoped to the
@@ -67,7 +68,8 @@ public actor MDRSafetyFilter {
         // swiftlint:disable:next force_try
         try! NSRegularExpression(
             pattern: #"\b(Dosis|Dosierung|Tablette|Spritze|Therapie|Medikament\w*|"#
-                + #"dose|dosage|tablet|medication|therapy|treatment)\b"#,
+                + #"dose|dosage|tablet|medication|therapy|treatment|"#
+                + #"dosering|tabletten|injectie\w*|spuit\w*|medicijn\w*|medicatie|behandeling\w*|pillen)\b"#,
             options: .caseInsensitive
         )
 
@@ -81,11 +83,22 @@ public actor MDRSafetyFilter {
     /// refusal path. `empfiehlt`/`empfehlen` guard nothing today (the German
     /// row-8 regex matches `empfehl` + e/en/et only); they are listed so the
     /// exemption stays correct if a later row widens.
+    ///
+    /// **Dutch (nl).** Dutch cites in three shapes, so it needs three arms: the
+    /// body as subject ("De ESH-richtlijnen bevelen … aan"), the body's
+    /// "aanbeveling", and the passive "volgens/door de WHO … aanbevolen". Each
+    /// arm runs from the body to the flagged verb, so the overlap rule still
+    /// scopes the exemption to that one verb.
     private static let citedBodyRecommends =
         // swiftlint:disable:next force_try
         try! NSRegularExpression(
             pattern: #"\b(Leitlinien?|ESH|ESC|AHA|ACC|ADA|WHO|EMA|guidelines?)\s+"#
-                + #"(empfiehlt|empfehlen|recommends?|recommend)\b"#,
+                + #"(empfiehlt|empfehlen|recommends?|recommend)\b|"#
+                + #"\b(\w*richtlijnen?|ESH|ESC|AHA|ACC|ADA|WHO|EMA|NHG|RIVM|Gezondheidsraad)\s+"#
+                + #"(beveelt|bevelen|adviseert|adviseren|raadt|raden)\b|"#
+                + #"\baanbeveling\w*\s+van\s+(de\s+)?[\w-]*(richtlijnen?|ESH|ESC|AHA|ACC|ADA|WHO|EMA|NHG|RIVM|Gezondheidsraad)\b|"#
+                + #"\b(volgens|door)\s+(de\s+)?[\w-]*(richtlijnen?|ESH|ESC|AHA|ACC|ADA|WHO|EMA|NHG|RIVM|Gezondheidsraad)\b"#
+                + #"[^.!?]{0,60}?\b(aanbevolen|aanbeveling\w*|aangeraden|geadviseerd)\b"#,
             options: .caseInsensitive
         )
 
@@ -101,13 +114,21 @@ public actor MDRSafetyFilter {
     /// diagnostic claim leaking through — it is the requested output shape.
     /// Without the possibility word the sentence never reaches the row-9
     /// patterns at all, so this exemption can only ever soften the pairing.
+    ///
+    /// The Dutch arms follow the German breadth ("mit deinem Arzt" is any
+    /// sentence that routes to the doctor): "met/aan/bij je arts", "vraag je
+    /// huisarts", "raadpleeg uw arts", "(laten) medisch beoordelen".
     private static let clinicianHandOff =
         // swiftlint:disable:next force_try
         try! NSRegularExpression(
             pattern: #"(ask\s+your\s+doctor|talk\s+to\s+your\s+(doctor|clinician)|"#
                 + #"discuss(ing)?\s+(this\s+)?with\s+your\s+(doctor|clinician)|"#
                 + #"mit\s+(deiner|Ihrer)\s+Ärztin|mit\s+(deinem|Ihrem)\s+Arzt|"#
-                + #"ärztlich\s+(abklären|besprechen))"#,
+                + #"ärztlich\s+(abklären|besprechen)|"#
+                + #"\b(met|aan|door|bij)\s+(je|jouw|uw|een|de)\s+(huis)?(arts|dokter|behandelaar)\b|"#
+                + #"\bvraag\s+(het\s+)?(ook\s+)?(je|jouw|uw)\s+(huis)?(arts|dokter)\b|"#
+                + #"\braadpleeg\s+(je|jouw|uw|een)\s+(huis)?(arts|dokter)\b|"#
+                + #"\bmedisch\s+(laten\s+)?(beoordelen|onderzoeken|nakijken))"#,
             options: .caseInsensitive
         )
 
@@ -116,22 +137,23 @@ public actor MDRSafetyFilter {
     /// them to drift apart — which is precisely the bug fix round 1 found (the
     /// old `prescriptive` row had one of the two and behaved differently from
     /// its English twin as a result).
-    private static var citationExemption: Exemption {
+    static var citationExemption: Exemption {
         Exemption(scope: .overlappingMatch, phrase: citedBodyRecommends, blockedBy: concreteIntervention)
     }
 
-    private static var handOffExemption: Exemption {
+    static var handOffExemption: Exemption {
         Exemption(scope: .sentence, phrase: clinicianHandOff, blockedBy: concreteIntervention)
     }
 
     /// The row-9 hand-off, WITHOUT the concrete-intervention guard: "this could
     /// point to hypertension, ask your doctor" names no intervention, and
     /// blocking on those words there would refuse ordinary talking points.
-    private static var handOffExemptionUnguarded: Exemption {
+    static var handOffExemptionUnguarded: Exemption {
         Exemption(scope: .sentence, phrase: clinicianHandOff)
     }
 
-    /// 25-pattern matrix per R4 §5.1.
+    /// 44-pattern matrix per R4 §5.1: the 25 German/English rows below plus
+    /// the 19 Dutch twins in `MDRSafetyFilter+Dutch.swift`.
     ///
     /// **Arithmetic, corrected in fix round 2.** The header used to say
     /// "20-pattern matrix (15 base rows from I-1 + 5 Mini-Coach extensions)".
@@ -141,6 +163,10 @@ public actor MDRSafetyFilter {
     /// stood at **22** before 1.0.3. From there: R19b added **no** rows (it
     /// added exemptions to three existing ones), R21 added the two
     /// bare-prescriptive rows, and R23 added `bare_recommend_en` → **25**.
+    /// Dutch (nl) added **19**, one `_nl` twin per German/English row family
+    /// (the bilingual `prescriptive` row and `bare_recommend_en` share one
+    /// twin, `prescriptive_nl`) → **44**. Every row runs on every text, so the
+    /// Dutch rows can only make the filter stricter.
     /// `MDRSafetyFilterExemptionsTests.matrixSizeUnchanged` pins the total.
     /// Each entry is annotated with the pattern row in the safety matrix so
     /// reviewers can cross-reference.
@@ -151,7 +177,9 @@ public actor MDRSafetyFilter {
     /// softeners; 9 = reflective-suggestive condition floating) close
     /// gaps the conversational surface re-opens that the briefing
     /// (one-shot, no user echo) didn't have.
-    private static let patterns: [Pattern] = // swiftlint:disable force_try
+    private static let patterns: [Pattern] = basePatterns + dutchPatterns
+
+    private static let basePatterns: [Pattern] = // swiftlint:disable force_try
         [
             // Row 7 — Predictive language ("wird steigen", "wird morgen steigen", "will rise", "predicted peak")
             Pattern(

@@ -241,7 +241,7 @@ enum MedicationExtractionPrompt {
     static func build(rawText: String, locale: Locale) -> String {
         switch AppLanguage.resolve(locale) {
         case .nl:
-            return """
+            """
             OCR-transcript van een foto van een medicijnverpakking:
             \"\"\"
             \(rawText)
@@ -253,7 +253,7 @@ enum MedicationExtractionPrompt {
             Leid NIET af waarvoor het middel dient, wat de indicatie is of wat de klinische werking is.
             """
         case .en:
-            return """
+            """
             OCR transcript from a medication-package photo:
             \"\"\"
             \(rawText)
@@ -265,7 +265,7 @@ enum MedicationExtractionPrompt {
             Do NOT infer the drug's use, indication, or any clinical effect.
             """
         case .de:
-            return """
+            """
             OCR-Transkript eines Medikamenten-Packungsfotos:
             \"\"\"
             \(rawText)
@@ -314,9 +314,9 @@ enum MedicationExtractionPrompt {
     STYLE: lexical, not advisory. You are a copy-out function, not a doctor.
     """
 
-    // The fourth rule used to read "Diagnostiziere, sage nichts vorher,
-    // verordne nichts", which tells the model to diagnose; it now forbids it
-    // like the English and Dutch rows.
+    /// The fourth rule used to read "Diagnostiziere, sage nichts vorher,
+    /// verordne nichts", which tells the model to diagnose; it now forbids it
+    /// like the English and Dutch rows.
     private static let germanInstructions = """
     Du bist ein lexikalisches Extraktions-Werkzeug für eine deutsche Gesundheits-Tagebuch-App. \
     Deine einzige Aufgabe: vier Felder aus einem OCR-Transkript kopieren: Produktname, Dosisstärke, Darreichungsform, Hersteller-Hinweis.

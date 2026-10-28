@@ -376,9 +376,9 @@ enum MoodTagExtractionPrompt {
     STYLE: lexical, not advisory. You are a topic-extractor, not a doctor.
     """
 
-    // The second rule used to read "Diagnostiziere, sage nichts vorher,
-    // verordne nichts", which tells the model to diagnose; it now forbids it
-    // like the English and Dutch rows.
+    /// The second rule used to read "Diagnostiziere, sage nichts vorher,
+    /// verordne nichts", which tells the model to diagnose; it now forbids it
+    /// like the English and Dutch rows.
     private static let germanInstructions = """
     Du bist ein lexikalisches Extraktions-Werkzeug für eine deutsche Stimmungs-Tagebuch-App. \
     Deine einzige Aufgabe: kurze Tag-Labels aus einer Freitext-Stimmungsnotiz extrahieren. \

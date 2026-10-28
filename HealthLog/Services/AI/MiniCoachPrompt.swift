@@ -97,11 +97,11 @@ public enum MiniCoachPrompt {
     static func refusalCopy(locale: Locale) -> String {
         switch AppLanguage.resolve(locale) {
         case .en:
-            return "I can only explain the data you logged. I cannot give medical advice or predictions."
+            "I can only explain the data you logged. I cannot give medical advice or predictions."
         case .nl:
-            return "Ik kan alleen de gegevens uitleggen die je hebt vastgelegd. Medisch advies of voorspellingen horen niet bij mijn taken."
+            "Ik kan alleen de gegevens uitleggen die je hebt vastgelegd. Medisch advies of voorspellingen horen niet bij mijn taken."
         case .de:
-            return "Ich kann nur die Daten erklären, die du erfasst hast. Medizinische Ratschläge oder Vorhersagen gehören nicht zu meinen Aufgaben."
+            "Ich kann nur die Daten erklären, die du erfasst hast. Medizinische Ratschläge oder Vorhersagen gehören nicht zu meinen Aufgaben."
         }
     }
 
@@ -111,11 +111,11 @@ public enum MiniCoachPrompt {
     static func unsupportedFallback(locale: Locale) -> String {
         switch AppLanguage.resolve(locale) {
         case .en:
-            return "Mini-Coach requires iOS 26+ with Apple Intelligence."
+            "Mini-Coach requires iOS 26+ with Apple Intelligence."
         case .nl:
-            return "Mini-Coach vereist iOS 26+ met Apple Intelligence."
+            "Mini-Coach vereist iOS 26+ met Apple Intelligence."
         case .de:
-            return "Mini-Coach erfordert iOS 26+ mit Apple Intelligence."
+            "Mini-Coach erfordert iOS 26+ mit Apple Intelligence."
         }
     }
 

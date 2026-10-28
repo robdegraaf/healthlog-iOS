@@ -25,12 +25,14 @@ extension LocaleText {
             switch locale {
             case .de: return "\(row.medicationName): kein Einnahmeplan in HealthLog, keine Einnahmetreue"
             case .en: return "\(row.medicationName): no HealthLog schedule, no adherence rate"
+            case .nl: return "\(row.medicationName): geen innameschema in HealthLog, geen therapietrouw"
             }
         }
         let percent = HLNumberFormat.percent(rate, locale: Locale(identifier: locale.foundationIdentifier))
         switch locale {
         case .de: return "\(row.medicationName): \(taken) von \(expected) eingenommen (\(percent)) in \(windowDays) Tagen"
         case .en: return "\(row.medicationName): \(taken) of \(expected) taken (\(percent)) in \(windowDays) days"
+        case .nl: return "\(row.medicationName): \(taken) van \(expected) ingenomen (\(percent)) in \(windowDays) dagen"
         }
     }
 
@@ -38,6 +40,7 @@ extension LocaleText {
         switch locale {
         case .de: "Einnahmetreue der letzten \(windowDays) Tage, vom HealthLog-Server nach Einnahmeplan berechnet."
         case .en: "Adherence over the last \(windowDays) days, computed by the HealthLog server from the dosing schedule."
+        case .nl: "Therapietrouw over de afgelopen \(windowDays) dagen, door de HealthLog-server berekend op basis van het innameschema."
         }
     }
 
@@ -45,6 +48,7 @@ extension LocaleText {
         switch locale {
         case .de: "Fuer den Berichtszeitraum von \(periodDays) Tagen liefert der Server keine Einnahmetreue; gezeigt sind die letzten \(windowDays) Tage."
         case .en: "The server provides no adherence for the \(periodDays)-day report period; the last \(windowDays) days are shown."
+        case .nl: "Voor de rapportageperiode van \(periodDays) dagen levert de server geen therapietrouw; getoond worden de afgelopen \(windowDays) dagen."
         }
     }
 
@@ -52,6 +56,7 @@ extension LocaleText {
         switch locale {
         case .de: "Einnahmetreue nicht verfuegbar: Der HealthLog-Server war beim Erstellen nicht erreichbar."
         case .en: "Adherence not available: the HealthLog server could not be reached when this report was made."
+        case .nl: "Therapietrouw niet beschikbaar: de HealthLog-server was bij het aanmaken van dit rapport niet bereikbaar."
         }
     }
 }
@@ -105,6 +110,8 @@ extension LocaleText {
             return "Alle Medikamente (\(figure.medicationCount)): \(figure.taken) von \(figure.expected) eingenommen (\(percent)) in \(windowDays) Tagen"
         case .en:
             return "All medications (\(figure.medicationCount)): \(figure.taken) of \(figure.expected) taken (\(percent)) in \(windowDays) days"
+        case .nl:
+            return "Alle medicatie (\(figure.medicationCount)): \(figure.taken) van \(figure.expected) ingenomen (\(percent)) in \(windowDays) dagen"
         }
     }
 }

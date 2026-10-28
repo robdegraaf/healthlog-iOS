@@ -419,13 +419,24 @@ public struct DoctorReportSpec: Sendable, Equatable {
 
 // MARK: - Locale gate
 
-/// Report locale — DE primary, EN secondary. Forced at spec-build time so
-/// the renderer's date-formatter + section-titles agree on one language,
-/// even when the system locale differs (operator may share the PDF with
-/// an English-speaking specialist).
+/// Report locale — one per interface language (DE, EN, NL). Forced at
+/// spec-build time so the renderer's date-formatter + section-titles agree
+/// on one language, even when the system locale differs (operator may share
+/// the PDF with an English-speaking specialist).
 public enum ReportLocale: String, Sendable, Equatable, CaseIterable {
     case de
     case en
+    case nl
+
+    /// The report language for an interface language. Exhaustive on purpose:
+    /// a fourth `AppLanguage` must not compile until the report speaks it.
+    public init(_ language: AppLanguage) {
+        switch language {
+        case .de: self = .de
+        case .en: self = .en
+        case .nl: self = .nl
+        }
+    }
 
     public var bcp47: String {
         rawValue
@@ -435,6 +446,7 @@ public enum ReportLocale: String, Sendable, Equatable, CaseIterable {
         switch self {
         case .de: "de_DE"
         case .en: "en_US"
+        case .nl: "nl_NL"
         }
     }
 }
@@ -483,11 +495,13 @@ public struct DoctorReportSectionSelection: Sendable, Equatable {
 public enum DoctorReportDisclaimer {
     public static let de = "Lokaler Export, kein Server beteiligt, auf-Geraet erzeugt, kein medizinisches Dokument"
     public static let en = "Local export, no server involved, generated on-device, not a medical document"
+    public static let nl = "Lokale export, geen server betrokken, op het apparaat aangemaakt, geen medisch document"
 
     public static func text(for locale: ReportLocale) -> String {
         switch locale {
         case .de: de
         case .en: en
+        case .nl: nl
         }
     }
 }

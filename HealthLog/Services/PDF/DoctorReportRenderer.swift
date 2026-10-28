@@ -164,6 +164,7 @@ public enum PDFMeta {
         switch locale {
         case .de: "Arztbericht"
         case .en: "Doctor Report"
+        case .nl: "Artsenrapport"
         }
     }
 }

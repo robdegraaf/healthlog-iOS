@@ -179,7 +179,9 @@ import SwiftUI
             return HLChartAX.singleSeries(
                 title: series.kind.displayName,
                 summary: series.kind.displayName,
-                xAxisTitle: "Datum",
+                // VoiceOver reads this in the interface language, like the
+                // series names around it.
+                xAxisTitle: String(localized: "Date"),
                 yAxisTitle: series.kind.displayName,
                 seriesName: series.kind.displayName,
                 points: points.map { ($0.x, $0.y, $0.xLabel) }

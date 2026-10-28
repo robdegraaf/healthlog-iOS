@@ -209,7 +209,7 @@ public final class ChartDetailStore {
         measurementsRepo: MeasurementsRepository,
         insightsRepo: MetricInsightsRepository,
         resolveLocale: @escaping @Sendable () -> String = {
-            Locale.autoupdatingCurrent.language.languageCode?.identifier ?? "de"
+            AppLanguage.current.serverCode
         },
         consentGate: (@MainActor () -> Bool)? = nil,
         preLoadHook: (@Sendable () async -> Void)? = nil,

@@ -57,8 +57,11 @@ public extension MutationKind {
                 .healthScore,
                 .insightsComprehensive,
                 .insightsCards,
-                .metricInsights(kind: kind, locale: "de"),
-                .metricInsights(kind: kind, locale: "en")
+                // One metric-insights row per interface language the app can
+                // fetch it in (``AppLanguage/serverCode``).
+                .metricInsights(kind: kind, locale: AppLanguage.de.serverCode),
+                .metricInsights(kind: kind, locale: AppLanguage.en.serverCode),
+                .metricInsights(kind: kind, locale: AppLanguage.nl.serverCode)
             ]
         case .moodEntryChange:
             [

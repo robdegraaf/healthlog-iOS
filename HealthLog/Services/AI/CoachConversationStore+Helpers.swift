@@ -123,8 +123,9 @@ extension CoachConversationStore {
     /// **Locale (1.0.3, R11):** the composer now picks its guardrail language
     /// from the session locale, so the parameter is explicit here rather than
     /// defaulted deep inside the builder — and a test can pin a language
-    /// instead of inheriting the runner's.
-    func composePrompt(userText: String, locale: Locale = .current) -> String {
+    /// instead of inheriting the runner's. The default is the interface
+    /// language, not the device language (a French device reads English).
+    func composePrompt(userText: String, locale: Locale = AppLanguage.current.locale) -> String {
         let snapshot = snapshotProvider?() ?? HealthSnapshot.empty
         return PrivacyFirstPromptBuilder.compose(
             userText: userText,
@@ -177,13 +178,13 @@ extension CoachConversationStore {
 
     // MARK: - Server-arm helpers
 
-    /// Resolve the two-letter locale code the server Coach expects
-    /// (`"de"` / `"en"`). Falls back to `"en"` for any other system
-    /// language so the server's refusal copy never renders in an
-    /// unsupported tongue.
-    func serverLocaleCode() -> String {
-        let code = Locale.current.language.languageCode?.identifier ?? "en"
-        return code == "de" ? "de" : "en"
+    /// The locale the server Coach's request body accepts (`"de"` / `"en"`),
+    /// read from the interface language rather than the device language. A
+    /// Dutch interface sends none: the body schema would refuse "nl" with a
+    /// 422, and without the field the server resolves the reader's language
+    /// itself (``AppLanguage/twoLocaleServerCode``).
+    func serverLocaleCode() -> String? {
+        AppLanguage.current.twoLocaleServerCode
     }
 
     /// Id of the most recently appended transcript entity — used by the

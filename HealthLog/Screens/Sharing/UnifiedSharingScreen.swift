@@ -344,7 +344,7 @@ struct UnifiedSharingScreen: View {
                 localReportStore: localReportStore,
                 linkStore: linkStore,
                 snapshot: makeSnapshot(),
-                locale: Locale.current.language.languageCode?.identifier ?? "de",
+                locale: AppLanguage.current.serverCode,
                 isBackendReachable: backend.isReachable
             )
         )

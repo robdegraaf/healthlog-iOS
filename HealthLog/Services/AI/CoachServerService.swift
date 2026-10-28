@@ -46,8 +46,8 @@ public actor CoachServerService {
     ///   - conversationId: `nil` for a new conversation, otherwise the
     ///     id the server returned on a previous turn so the thread
     ///     continues.
-    ///   - locale: `"de"` / `"en"` so the server renders refusal copy in
-    ///     the right language.
+    ///   - locale: `"de"` / `"en"` for refusal copy in that language; `nil`
+    ///     lets the server resolve any other interface language itself.
     /// - Returns: the assistant reply text + the (new-or-existing)
     ///   conversation id so the caller can continue the thread.
     /// - Throws: ``CoachServerError`` for transport, decode, or
@@ -55,7 +55,7 @@ public actor CoachServerService {
     public func respond(
         message: String,
         conversationId: String?,
-        locale: String,
+        locale: String?,
         scope: CoachScopeWire? = nil,
         prefill: String? = nil,
         onToken: (@MainActor @Sendable (String) async -> Void)? = nil

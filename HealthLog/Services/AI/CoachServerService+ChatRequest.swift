@@ -16,7 +16,10 @@ import Foundation
 struct ChatRequestBody: Encodable {
     let conversationId: String?
     let message: String
-    let locale: String
+    /// `nil` leaves the field out: the server schema accepts only `de` / `en`
+    /// here and resolves any other reader's language itself
+    /// (``AppLanguage/twoLocaleServerCode``).
+    let locale: String?
     /// Wire `scope` ({ sources, window }) — `nil` for an unscoped turn.
     let scope: CoachScopeWire?
     /// First-turn composer-seed nudge — `nil` when the turn carries none.
@@ -25,7 +28,7 @@ struct ChatRequestBody: Encodable {
     init(
         conversationId: String?,
         message: String,
-        locale: String,
+        locale: String?,
         scope: CoachScopeWire? = nil,
         prefill: String? = nil
     ) {
@@ -48,7 +51,7 @@ struct ChatRequestBody: Encodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(conversationId, forKey: .conversationId)
         try container.encode(message, forKey: .message)
-        try container.encode(locale, forKey: .locale)
+        try container.encodeIfPresent(locale, forKey: .locale)
         try container.encodeIfPresent(scope, forKey: .scope)
         try container.encodeIfPresent(prefill, forKey: .prefill)
     }

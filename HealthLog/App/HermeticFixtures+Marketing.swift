@@ -152,7 +152,8 @@
         private static var trulicityDose: String {
             // The bundle's resolved localization, like the citations overlay:
             // it is what `Text()` renders from, so dose and chrome agree.
-            Bundle.main.preferredLocalizations.first?.hasPrefix("de") == true ? "1,5 mg" : "1.5 mg"
+            // German and Dutch both write a decimal comma.
+            AppLanguage.current == .en ? "1.5 mg" : "1,5 mg"
         }
 
         /// `/api/dashboard/summary` with the empty salutation, re-dated to the

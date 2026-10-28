@@ -63,10 +63,14 @@ public enum HLDateFormat: String, CaseIterable, Sendable {
     /// governs); the pinned cases return the canonical locale whose default
     /// numeric date order matches the requested preference — identical to the
     /// server's `dateOrderLocale`.
+    ///
+    /// A Dutch interface pins `nl_NL` for DMY instead: Dutch orders day-month-
+    /// year natively, and `de_DE` would otherwise render German month names
+    /// ("17. Juni 2026") in the abbreviated and long styles under a Dutch UI.
     public var formattingLocale: Locale {
         switch self {
         case .auto: .current
-        case .dayMonthYear: Locale(identifier: "de_DE")
+        case .dayMonthYear: AppLanguage.current == .nl ? Locale(identifier: "nl_NL") : Locale(identifier: "de_DE")
         case .monthDayYear: Locale(identifier: "en_US")
         case .yearMonthDay: Locale(identifier: "en_CA")
         }
